@@ -1,0 +1,35 @@
+version: '3.3'
+services:
+  jenkins: 
+     container_name: jenkins
+     image: jenkins-docker
+     build:
+       context: pipeline
+     ports:
+       - "8080:8080"
+     volumes:
+       - ./jenkins_home:/var/run/jenkins_home
+       - /var/run/docker.sock:/var/run/docker.sock
+       
+     networks:
+       - jenkins_net
+  remote_host:
+     container_name: remote_host
+     image: remote_host
+     build:
+       context: remote_container
+     networks:
+        - jenkins_net
+  db_host:
+     container_name: db
+     image: mysql:5.7
+     environment:
+       MYSQL_ROOT_PASSWORD: 12345
+     volumes:
+        - ./db_data:/var/lib/mysql
+     networks:
+        - jenkins_net
+
+networks:
+  jenkins_net:
+
